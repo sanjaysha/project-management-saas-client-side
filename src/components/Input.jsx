@@ -4,6 +4,8 @@ export default function Input({
   placeholder,
   error,
   register,
+  value,
+  onChange,
 }) {
   return (
     <div className="space-y-1">
@@ -11,11 +13,13 @@ export default function Input({
 
       <input
         type={type}
-        {...register}
         placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        {...register}
         className={`
-          w-full rounded-lg border px-3 py-2 text-sm focus:outline-none
-          focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
+          w-full rounded-lg border px-3 py-2 text-sm
+          focus:outline-none focus:ring-2 focus:ring-indigo-500
           ${error ? "border-red-500" : "border-gray-300"}
         `}
       />

@@ -1,12 +1,16 @@
 import AuthLayout from "../layout/AuthLayout";
 import Input from "../components/Input";
 import Button from "../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema } from "../validators/auth.schema";
+import { useAuth } from "../auth/AuthProvider";
 
 export default function Register() {
+  const navigate = useNavigate();
+  const { register: registerUser } = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -15,9 +19,14 @@ export default function Register() {
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = (data) => {
-    console.log("REGISTER:", data);
-    // Backend call will be added in Step 11.6
+  const onSubmit = async (data) => {
+    try {
+      await registerUser(data); // IMPORTANT: AuthContext
+      navigate("/"); // redirect after successful registration
+    } catch (error) {
+      console.error(error);
+      alert("Registration failed");
+    }
   };
 
   return (
@@ -49,7 +58,7 @@ export default function Register() {
           error={errors.password?.message}
         />
 
-        <Button>Create account</Button>
+        <Button type="submit">Create account</Button>
       </form>
 
       <p className="text-sm text-gray-500 text-center mt-4">

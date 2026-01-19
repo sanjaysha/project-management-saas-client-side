@@ -1,12 +1,16 @@
 import AuthLayout from "../layout/AuthLayout";
 import Input from "../components/Input";
 import Button from "../components/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from "../validators/auth.schema";
+import { useAuth } from "../auth/AuthProvider";
 
 export default function Login() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -15,9 +19,14 @@ export default function Login() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data) => {
-    console.log("LOGIN:", data);
-    // Backend call will be added later
+  const onSubmit = async (data) => {
+    try {
+      await login(data); // IMPORTANT: use AuthProvider
+      navigate("/"); // redirect after login
+    } catch (error) {
+      console.error(error);
+      alert("Invalid credentials");
+    }
   };
 
   return (
@@ -39,7 +48,7 @@ export default function Login() {
           error={errors.password?.message}
         />
 
-        <Button>Sign in</Button>
+        <Button type="submit">Sign in</Button>
       </form>
 
       <p className="text-sm text-gray-500 text-center mt-4">
